@@ -1,5 +1,6 @@
 """Intervals.icu MCP Server - FastMCP entry point."""
 
+import os
 import argparse
 import sys
 from typing import Any
@@ -8,12 +9,30 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from fastmcp.server.auth import StaticTokenVerifier
 
 # Load environment variables
 load_dotenv()
 
-# Initialize FastMCP server
-mcp = FastMCP("intervals_icu_mcp")
+# Configure bearer-token authentication for remote access.
+_MCP_AUTH_TOKEN = os.environ.get("MCP_AUTH_TOKEN")
+
+_auth = (
+    StaticTokenVerifier(
+        tokens={
+            _MCP_AUTH_TOKEN: {
+                "sub": "claude-client",
+                "client_id": "claude",
+            }
+        }
+    )
+    if _MCP_AUTH_TOKEN
+    else None
+)
+
+# Local stdio remains usable without a remote-access token.
+# Remote HTTP startup is explicitly rejected below if the token is missing.
+mcp = FastMCP("intervals_icu_mcp", auth=_auth)
 
 
 @mcp.custom_route("/health", methods=["GET"], include_in_schema=False)
@@ -1295,6 +1314,12 @@ def _emit_startup_log() -> None:
 def main() -> None:
     """Main entry point for the Intervals.icu MCP server."""
     args = _parse_args()
+
+    if args.transport != "stdio" and not _MCP_AUTH_TOKEN:
+        raise SystemExit(
+            "MCP_AUTH_TOKEN must be set for remote HTTP transports."
+        )
+
     _emit_startup_log()
 
     if args.transport == "stdio":
