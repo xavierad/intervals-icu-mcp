@@ -776,6 +776,49 @@ if _DELETE_MODE == "full":
         },
     )(delete_custom_item)
 
+# Remote deployment: expose read-only tools only.
+# Use registered MCP tool names, including their icu_ prefixes.
+_READ_ONLY_TOOLS = {
+    "icu_get_recent_activities",
+    "icu_get_activities_by_date",
+    "icu_get_activity_details",
+    "icu_search_activities",
+    "icu_search_activities_full",
+    "icu_get_activities_around",
+    "icu_download_activity_file",
+    "icu_download_fit_file",
+    "icu_download_gpx_file",
+    "icu_get_activity_streams",
+    "icu_get_activity_intervals",
+    "icu_get_best_efforts",
+    "icu_search_intervals",
+    "icu_get_power_histogram",
+    "icu_get_hr_histogram",
+    "icu_get_pace_histogram",
+    "icu_get_gap_histogram",
+    "icu_list_athletes",
+    "icu_get_athlete_profile",
+    "icu_get_fitness_summary",
+    "icu_get_fitness_chart",
+    "icu_get_wellness_data",
+    "icu_get_wellness_for_date",
+    "icu_get_calendar_events",
+    "icu_get_upcoming_workouts",
+    "icu_get_event",
+    "icu_get_annual_training_plan",
+    "icu_get_power_curves",
+    "icu_get_hr_curves",
+    "icu_get_pace_curves",
+    "icu_get_workout_library",
+    "icu_get_workouts_in_folder",
+    "icu_get_gear_list",
+    "icu_get_sport_settings",
+    "icu_get_activity_messages",
+    "icu_get_custom_items",
+    "icu_get_custom_item",
+}
+
+mcp.enable(names=_READ_ONLY_TOOLS, components={"tool"}, only=True)
 
 # MCP Resources - Provide ongoing context
 @mcp.resource("intervals-icu://athlete/profile")
