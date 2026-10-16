@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from fastmcp.server.auth import StaticTokenVerifier
+from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+
 
 # Load environment variables
 load_dotenv()
